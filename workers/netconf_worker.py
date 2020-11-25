@@ -6,7 +6,7 @@ from string import Template
 
 import requests
 
-from frinx_rest import odl_url_base, odl_credentials, parse_response, elastic_url_base, elastic_headers, add_uniconfig_tx_cookie
+from frinx_rest import odl_url_base, additional_odl_request_params, parse_response, elastic_url_base, elastic_headers, add_uniconfig_tx_cookie
 
 odl_url_netconf_mount = odl_url_base + "/data/network-topology:network-topology/topology=topology-netconf/node=$id"
 odl_url_netconf_mount_oper = odl_url_base + "/data/network-topology:network-topology/topology=topology-netconf/node=$id?content=nonconfig"
@@ -71,7 +71,7 @@ def execute_mount_netconf(task):
 
     id_url = Template(odl_url_netconf_mount).substitute({"id": device_id})
 
-    r = requests.put(id_url, data=json.dumps(mount_body), headers=add_uniconfig_tx_cookie(uniconfig_tx_id), auth=odl_credentials)
+    r = requests.put(id_url, data=json.dumps(mount_body), headers=add_uniconfig_tx_cookie(uniconfig_tx_id), **additional_odl_request_params)
     response_code, response_json = parse_response(r)
 
     if response_code == requests.codes.created or response_code == requests.codes.no_content:
@@ -94,7 +94,7 @@ def execute_unmount_netconf(task):
 
     id_url = Template(odl_url_netconf_mount).substitute({"id": device_id})
 
-    r = requests.delete(id_url, headers=add_uniconfig_tx_cookie(uniconfig_tx_id), auth=odl_credentials)
+    r = requests.delete(id_url, headers=add_uniconfig_tx_cookie(uniconfig_tx_id), **additional_odl_request_params)
     response_code, response_json = parse_response(r)
 
     return {'status': 'COMPLETED', 'output': {'url': id_url,
@@ -109,7 +109,7 @@ def execute_check_netconf_id_available(task):
 
     id_url = Template(odl_url_netconf_mount).substitute({"id": device_id}) + "?content=config"
 
-    r = requests.get(id_url, headers=add_uniconfig_tx_cookie(uniconfig_tx_id), auth=odl_credentials)
+    r = requests.get(id_url, headers=add_uniconfig_tx_cookie(uniconfig_tx_id), **additional_odl_request_params)
     response_code, response_json = parse_response(r)
 
     if response_code != requests.codes.not_found:
@@ -131,7 +131,7 @@ def execute_check_connected_netconf(task):
 
     id_url = Template(odl_url_netconf_mount_oper).substitute({"id": device_id})
 
-    r = requests.get(id_url, headers=add_uniconfig_tx_cookie(uniconfig_tx_id), auth=odl_credentials)
+    r = requests.get(id_url, headers=add_uniconfig_tx_cookie(uniconfig_tx_id), **additional_odl_request_params)
     response_code, response_json = parse_response(r)
 
     if response_code == requests.codes.ok and response_json["node"][0]["netconf-node-topology:connection-status"] == "connected":
@@ -153,7 +153,7 @@ def read_structured_data(task):
 
     id_url = Template(odl_url_netconf_mount).substitute({"id": device_id}) + "/yang-ext:mount" + (uri if uri else "")
 
-    r = requests.get(id_url, headers=add_uniconfig_tx_cookie(uniconfig_tx_id), auth=odl_credentials)
+    r = requests.get(id_url, headers=add_uniconfig_tx_cookie(uniconfig_tx_id), **additional_odl_request_params)
     response_code, response_json = parse_response(r)
 
     if response_code == requests.codes.ok:

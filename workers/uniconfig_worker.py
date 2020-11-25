@@ -8,7 +8,7 @@ from string import Template
 
 import requests
 
-from frinx_rest import odl_url_base, odl_headers, odl_credentials, parse_response, parse_header, add_uniconfig_tx_cookie
+from frinx_rest import odl_url_base, odl_headers, additional_odl_request_params, parse_response, parse_header, add_uniconfig_tx_cookie
 
 odl_url_uniconfig_config_shallow = odl_url_base + "/data/network-topology:network-topology/topology=uniconfig?content=config&depth=3"
 odl_url_uniconfig_oper = odl_url_base + "/data/network-topology:network-topology/topology=uniconfig?content=nonconfig"
@@ -66,7 +66,7 @@ def execute_read_uniconfig_topology_config(task):
 
 
 def read_all_devices(url, uniconfig_tx_id):
-    r = requests.get(url, headers=add_uniconfig_tx_cookie(uniconfig_tx_id), auth=odl_credentials)
+    r = requests.get(url, headers=add_uniconfig_tx_cookie(uniconfig_tx_id), **additional_odl_request_params)
     response_code, response_json = parse_response(r)
     return response_code, response_json
 
@@ -82,7 +82,7 @@ def read_selected_devices(url, devices, uniconfig_tx_id):
     }
     devices_array = [device.strip() for device in devices.split(',')]
     for d in devices_array:
-        r = requests.get(Template(url).substitute({"id": d}), headers=add_uniconfig_tx_cookie(uniconfig_tx_id), auth=odl_credentials)
+        r = requests.get(Template(url).substitute({"id": d}), headers=add_uniconfig_tx_cookie(uniconfig_tx_id), **additional_odl_request_params)
         response_code, response_json_tmp = parse_response(r)
         response_json['topology'][0]['node'].append(response_json_tmp['node'][0])
         if response_code != requests.codes.ok:
@@ -155,7 +155,7 @@ def read_structured_data(task):
 
     id_url = Template(odl_url_uniconfig_mount).substitute({"id": device_id}) + "/frinx-uniconfig-topology:configuration" + (uri if uri else "")
 
-    r = requests.get(id_url, headers=add_uniconfig_tx_cookie(uniconfig_tx_id), auth=odl_credentials)
+    r = requests.get(id_url, headers=add_uniconfig_tx_cookie(uniconfig_tx_id), **additional_odl_request_params)
     response_code, response_json = parse_response(r)
 
     if response_code == requests.codes.ok:
@@ -185,7 +185,7 @@ def write_structured_data(task):
     id_url = Template(odl_url_uniconfig_mount).substitute({"id": device_id}) + "/frinx-uniconfig-topology:configuration" + (uri if uri else "")
     id_url = Template(id_url).substitute(params)
 
-    r = requests.put(id_url, data=data_json, headers=add_uniconfig_tx_cookie(uniconfig_tx_id), auth=odl_credentials)
+    r = requests.put(id_url, data=data_json, headers=add_uniconfig_tx_cookie(uniconfig_tx_id), **additional_odl_request_params)
     response_code, response_json = parse_response(r)
 
     if response_code == requests.codes.no_content or response_code == requests.codes.created:
@@ -243,7 +243,7 @@ def delete_structured_data(task):
 
     id_url = Template(odl_url_uniconfig_mount).substitute({"id": device_id}) + "/frinx-uniconfig-topology:configuration" + (uri if uri else "")
 
-    r = requests.delete(id_url, headers=add_uniconfig_tx_cookie(uniconfig_tx_id), auth=odl_credentials)
+    r = requests.delete(id_url, headers=add_uniconfig_tx_cookie(uniconfig_tx_id), **additional_odl_request_params)
     response_code, response_json = parse_response(r)
 
     if response_code == requests.codes.no_content:
@@ -264,7 +264,7 @@ def execute_check_uniconfig_node_exists(task):
 
     id_url = Template(odl_url_uniconfig_mount).substitute({"id": device_id}) + "/frinx-uniconfig-topology:connection-status?content=nonconfig"
 
-    r = requests.get(id_url, headers=add_uniconfig_tx_cookie(uniconfig_tx_id), auth=odl_credentials)
+    r = requests.get(id_url, headers=add_uniconfig_tx_cookie(uniconfig_tx_id), **additional_odl_request_params)
     response_code, response_json = parse_response(r)
 
     if response_code != requests.codes.not_found and response_json["frinx-uniconfig-topology:connection-status"] == "installed":
@@ -294,7 +294,7 @@ def commit(task):
     r = requests.post(odl_url_uniconfig_commit,
                       data=json.dumps(create_commit_request(task)),
                       headers=add_uniconfig_tx_cookie(uniconfig_tx_id),
-                      auth=odl_credentials)
+                      **additional_odl_request_params)
     response_code, response_json = parse_response(r)
 
     if response_code == requests.codes.ok and response_json["output"]["overall-status"] == "complete":
@@ -314,7 +314,7 @@ def dryrun_commit(task):
     r = requests.post(odl_url_uniconfig_dryrun_commit,
                       data=json.dumps(create_commit_request(task)),
                       headers=add_uniconfig_tx_cookie(uniconfig_tx_id),
-                      auth=odl_credentials)
+                      **additional_odl_request_params)
     response_code, response_json = parse_response(r)
 
     if response_code == requests.codes.ok and response_json["output"]["overall-status"] == "complete":
@@ -334,7 +334,7 @@ def checked_commit(task):
     r = requests.post(odl_url_uniconfig_checked_commit,
                       data=json.dumps(create_commit_request(task)),
                       headers=add_uniconfig_tx_cookie(uniconfig_tx_id),
-                      auth=odl_credentials)
+                      **additional_odl_request_params)
     response_code, response_json = parse_response(r)
 
     if response_code == requests.codes.ok and response_json["output"]["overall-status"] == "complete":
@@ -354,7 +354,7 @@ def calc_diff(task):
     r = requests.post(odl_url_uniconfig_calculate_diff,
                       data=json.dumps(create_commit_request(task)),
                       headers=add_uniconfig_tx_cookie(uniconfig_tx_id),
-                      auth=odl_credentials)
+                      **additional_odl_request_params)
     response_code, response_json = parse_response(r)
 
     if response_code == requests.codes.ok and response_json["output"]["overall-status"] == "complete":
@@ -374,7 +374,7 @@ def sync_from_network(task):
     r = requests.post(odl_url_uniconfig_sync_from_network,
                       data=json.dumps(create_commit_request(task)),
                       headers=add_uniconfig_tx_cookie(uniconfig_tx_id),
-                      auth=odl_credentials)
+                      **additional_odl_request_params)
     response_code, response_json = parse_response(r)
 
     if response_code == requests.codes.ok and response_json["output"]["overall-status"] == "complete":
@@ -394,7 +394,7 @@ def replace_config_with_oper(task):
     r = requests.post(odl_url_uniconfig_replace_config_with_operational,
                       data=json.dumps(create_commit_request(task)),
                       headers=add_uniconfig_tx_cookie(uniconfig_tx_id),
-                      auth=odl_credentials)
+                      **additional_odl_request_params)
     response_code, response_json = parse_response(r)
 
     if response_code == requests.codes.ok and response_json["output"]["overall-status"] == "complete":
@@ -425,7 +425,7 @@ def create_snapshot(task):
     r = requests.post(odl_url_uniconfig_create_snapshot,
                       data=json.dumps(snapshot_body),
                       headers=add_uniconfig_tx_cookie(uniconfig_tx_id),
-                      auth=odl_credentials)
+                      **additional_odl_request_params)
     response_code, response_json = parse_response(r)
 
     if response_code == requests.codes.ok and response_json["output"]["overall-status"] == "complete":
@@ -485,7 +485,7 @@ def delete_snapshot(task):
     r = requests.post(odl_url_uniconfig_delete_snapshot,
                       data=json.dumps(snapshot_body),
                       headers=add_uniconfig_tx_cookie(uniconfig_tx_id),
-                      auth=odl_credentials)
+                      **additional_odl_request_params)
     response_code, response_json = parse_response(r)
 
     if response_code == requests.codes.ok and response_json["output"]["overall-status"] == "complete":
@@ -506,7 +506,7 @@ def replace_config_with_snapshot(task):
     r = requests.post(odl_url_uniconfig_replace_config_with_snapshot,
                       data=json.dumps(snapshot_body),
                       headers=add_uniconfig_tx_cookie(uniconfig_tx_id),
-                      auth=odl_credentials)
+                      **additional_odl_request_params)
     response_code, response_json = parse_response(r)
 
     if response_code == requests.codes.ok and response_json["output"]["overall-status"] == "complete":
@@ -527,7 +527,7 @@ def create_transaction(task):
     r = requests.post(id_url,
                       data=json.dumps({}),
                       headers=odl_headers,
-                      auth=odl_credentials)
+                      **additional_odl_request_params)
     response_code, response_json = parse_response(r)
     if response_code == requests.codes.created:
         response_json = parse_header(r)
@@ -548,7 +548,7 @@ def close_transaction(task):
     r = requests.post(odl_url_uniconfig_close_transaction,
                       data=json.dumps({}),
                       headers=custom_header,
-                      auth=odl_credentials)
+                      **additional_odl_request_params)
     response_code, response_json = parse_response(r)
     if response_code == requests.codes.ok:
         return {'status': 'COMPLETED', 'output': {'url': odl_url_uniconfig_close_transaction,

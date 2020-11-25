@@ -6,7 +6,7 @@ from string import Template
 
 import requests
 
-from frinx_rest import odl_url_base, odl_credentials, parse_response, add_uniconfig_tx_cookie
+from frinx_rest import odl_url_base, additional_odl_request_params, parse_response, add_uniconfig_tx_cookie
 
 odl_url_cli_mount = odl_url_base + "/data/network-topology:network-topology/topology=cli/node=$id"
 odl_url_cli_oper = odl_url_base + "/data/network-topology:network-topology/topology=cli?content=nonconfig"
@@ -53,7 +53,7 @@ def execute_mount_cli(task):
 
     id_url = Template(odl_url_cli_mount).substitute({"id": device_id})
 
-    r = requests.put(id_url, data=json.dumps(mount_body), headers=add_uniconfig_tx_cookie(uniconfig_tx_id), auth=odl_credentials)
+    r = requests.put(id_url, data=json.dumps(mount_body), headers=add_uniconfig_tx_cookie(uniconfig_tx_id), **additional_odl_request_params)
     response_code, response_json = parse_response(r)
 
     if response_code == requests.codes.created or response_code == requests.codes.no_content:
@@ -92,7 +92,7 @@ def execute_and_read_rpc_cli(task):
 
     id_url = Template(odl_url_cli_mount_rpc).substitute({"id": device_id}) + "/yang-ext:mount/cli-unit-generic:execute-and-read"
 
-    r = requests.post(id_url, data=json.dumps(exec_body), headers=add_uniconfig_tx_cookie(uniconfig_tx_id), auth=odl_credentials)
+    r = requests.post(id_url, data=json.dumps(exec_body), headers=add_uniconfig_tx_cookie(uniconfig_tx_id), **additional_odl_request_params)
     response_code, response_json = parse_response(r)
 
     if response_code == requests.codes.ok:
@@ -115,7 +115,7 @@ def execute_unmount_cli(task):
 
     id_url = Template(odl_url_cli_mount).substitute({"id": device_id})
 
-    r = requests.delete(id_url, headers=add_uniconfig_tx_cookie(uniconfig_tx_id), auth=odl_credentials)
+    r = requests.delete(id_url, headers=add_uniconfig_tx_cookie(uniconfig_tx_id), **additional_odl_request_params)
     response_code, response_json = parse_response(r)
 
     return {'status': 'COMPLETED', 'output': {'url': id_url,
@@ -130,7 +130,7 @@ def execute_check_cli_id_available(task):
 
     id_url = Template(odl_url_cli_mount).substitute({"id": device_id})
 
-    r = requests.get(id_url, headers=add_uniconfig_tx_cookie(uniconfig_tx_id), auth=odl_credentials)
+    r = requests.get(id_url, headers=add_uniconfig_tx_cookie(uniconfig_tx_id), **additional_odl_request_params)
     response_code, response_json = parse_response(r)
 
     if response_code != requests.codes.not_found:
@@ -152,7 +152,7 @@ def execute_check_connected_cli(task):
 
     id_url = Template(odl_url_cli_mount_oper).substitute({"id": device_id})
 
-    r = requests.get(id_url, headers=add_uniconfig_tx_cookie(uniconfig_tx_id), auth=odl_credentials)
+    r = requests.get(id_url, headers=add_uniconfig_tx_cookie(uniconfig_tx_id), **additional_odl_request_params)
     response_code, response_json = parse_response(r)
 
     if response_code == requests.codes.ok and response_json["node"][0]["cli-topology:connection-status"] == "connected":
@@ -171,7 +171,7 @@ def execute_read_cli_topology_operational(task):
     uniconfig_tx_id = task['inputData']['uniconfig_tx_id'] \
         if 'inputData' in task and 'uniconfig_tx_id' in task['inputData'] else ""
 
-    r = requests.get(odl_url_cli_oper, headers=add_uniconfig_tx_cookie(uniconfig_tx_id), auth=odl_credentials)
+    r = requests.get(odl_url_cli_oper, headers=add_uniconfig_tx_cookie(uniconfig_tx_id), **additional_odl_request_params)
     response_code, response_json = parse_response(r)
 
     if response_code == requests.codes.ok:
@@ -187,7 +187,7 @@ def execute_read_cli_topology_operational(task):
 
 
 def read_all_devices(url, uniconfig_tx_id):
-    r = requests.get(url, headers=add_uniconfig_tx_cookie(uniconfig_tx_id), auth=odl_credentials)
+    r = requests.get(url, headers=add_uniconfig_tx_cookie(uniconfig_tx_id), **additional_odl_request_params)
     response_code, response_json = parse_response(r)
 
     actual_nodes = response_json['topology'][0]['node']
@@ -258,7 +258,7 @@ def execute_get_cli_journal(task):
 
     id_url = Template(odl_url_cli_read_journal).substitute({"id": device_id})
 
-    r = requests.post(id_url, headers=add_uniconfig_tx_cookie(uniconfig_tx_id), auth=odl_credentials)
+    r = requests.post(id_url, headers=add_uniconfig_tx_cookie(uniconfig_tx_id), **additional_odl_request_params)
     response_code, response_json = parse_response(r)
 
     if response_code == requests.codes.ok:

@@ -1,7 +1,8 @@
 import json
+import os
 from http.cookies import SimpleCookie
 
-odl_url_base = "http://uniconfig:8181/rests"
+odl_url_base = os.getenv("UNICONFIG_URL_BASE","http://uniconfig:8181/rests")
 elastic_url_base = "http://elasticsearch:9200"
 conductor_url_base = "http://conductor-server:8080/api"
 

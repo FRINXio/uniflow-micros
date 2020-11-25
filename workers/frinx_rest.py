@@ -19,6 +19,10 @@ odl_credentials = ('admin', 'admin')
 odl_headers = {"Content-Type": "application/json"}
 elastic_headers = {"Content-Type": "application/json"}
 
+additional_odl_request_params = {
+    'auth': odl_credentials,
+    'verify': False
+}
 
 def parse_response(r):
     decode = r.content.decode('utf8')

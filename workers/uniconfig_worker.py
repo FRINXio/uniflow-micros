@@ -8,40 +8,40 @@ from string import Template
 
 import requests
 
-from frinx_rest import odl_url_base, odl_headers, additional_odl_request_params, parse_response, parse_header, add_uniconfig_tx_cookie
+from frinx_rest import uniconfig_url_base, uniconfig_headers, additional_uniconfig_request_params, parse_response, parse_header, add_uniconfig_tx_cookie
 
-odl_url_uniconfig_config_shallow = odl_url_base + "/data/network-topology:network-topology/topology=uniconfig?content=config&depth=3"
-odl_url_uniconfig_oper = odl_url_base + "/data/network-topology:network-topology/topology=uniconfig?content=nonconfig"
-odl_url_uniconfig_node_oper = odl_url_base + "/data/network-topology:network-topology/topology=uniconfig/node=$id?content=nonconfig"
-odl_url_uniconfig_config = odl_url_base + "/data/network-topology:network-topology/topology=uniconfig?content=config"
-odl_url_uniconfig_node_config = odl_url_base + "/data/network-topology:network-topology/topology=uniconfig/node=$id?content=config"
-odl_url_uniconfig_mount = odl_url_base + "/data/network-topology:network-topology/topology=uniconfig/node=$id"
-odl_url_uniconfig_commit = odl_url_base + '/operations/uniconfig-manager:commit'
-odl_url_uniconfig_dryrun_commit = odl_url_base + '/operations/dryrun-manager:dryrun-commit'
-odl_url_uniconfig_checked_commit = odl_url_base + '/operations/uniconfig-manager:checked-commit'
-odl_url_uniconfig_calculate_diff = odl_url_base + '/operations/uniconfig-manager:calculate-diff'
-odl_url_uniconfig_sync_from_network = odl_url_base + '/operations/uniconfig-manager:sync-from-network'
-odl_url_uniconfig_replace_config_with_operational = odl_url_base + '/operations/uniconfig-manager:replace-config-with-operational'
-odl_url_uniconfig_create_snapshot = odl_url_base + '/operations/snapshot-manager:create-snapshot'
-odl_url_uniconfig_delete_snapshot = odl_url_base + '/operations/snapshot-manager:delete-snapshot'
-odl_url_uniconfig_replace_config_with_snapshot = odl_url_base + '/operations/snapshot-manager:replace-config-with-snapshot'
-odl_url_uniconfig_create_transaction = odl_url_base + '/operations/uniconfig-manager:create-transaction?maxAgeSec=$sec'
-odl_url_uniconfig_close_transaction = odl_url_base + '/operations/uniconfig-manager:close-transaction'
+uniconfig_url_uniconfig_config_shallow = uniconfig_url_base + "/data/network-topology:network-topology/topology=uniconfig?content=config&depth=3"
+uniconfig_url_uniconfig_oper = uniconfig_url_base + "/data/network-topology:network-topology/topology=uniconfig?content=nonconfig"
+uniconfig_url_uniconfig_node_oper = uniconfig_url_base + "/data/network-topology:network-topology/topology=uniconfig/node=$id?content=nonconfig"
+uniconfig_url_uniconfig_config = uniconfig_url_base + "/data/network-topology:network-topology/topology=uniconfig?content=config"
+uniconfig_url_uniconfig_node_config = uniconfig_url_base + "/data/network-topology:network-topology/topology=uniconfig/node=$id?content=config"
+uniconfig_url_uniconfig_mount = uniconfig_url_base + "/data/network-topology:network-topology/topology=uniconfig/node=$id"
+uniconfig_url_uniconfig_commit = uniconfig_url_base + '/operations/uniconfig-manager:commit'
+uniconfig_url_uniconfig_dryrun_commit = uniconfig_url_base + '/operations/dryrun-manager:dryrun-commit'
+uniconfig_url_uniconfig_checked_commit = uniconfig_url_base + '/operations/uniconfig-manager:checked-commit'
+uniconfig_url_uniconfig_calculate_diff = uniconfig_url_base + '/operations/uniconfig-manager:calculate-diff'
+uniconfig_url_uniconfig_sync_from_network = uniconfig_url_base + '/operations/uniconfig-manager:sync-from-network'
+uniconfig_url_uniconfig_replace_config_with_operational = uniconfig_url_base + '/operations/uniconfig-manager:replace-config-with-operational'
+uniconfig_url_uniconfig_create_snapshot = uniconfig_url_base + '/operations/snapshot-manager:create-snapshot'
+uniconfig_url_uniconfig_delete_snapshot = uniconfig_url_base + '/operations/snapshot-manager:delete-snapshot'
+uniconfig_url_uniconfig_replace_config_with_snapshot = uniconfig_url_base + '/operations/snapshot-manager:replace-config-with-snapshot'
+uniconfig_url_uniconfig_create_transaction = uniconfig_url_base + '/operations/uniconfig-manager:create-transaction?maxAgeSec=$sec'
+uniconfig_url_uniconfig_close_transaction = uniconfig_url_base + '/operations/uniconfig-manager:close-transaction'
 
 
 def execute_read_uniconfig_topology_operational(task):
     devices = task['inputData']['devices'] if 'devices' in task['inputData'] else []
     uniconfig_tx_id = task['inputData']['uniconfig_tx_id'] if 'uniconfig_tx_id' in task['inputData'] else ""
-    response_code, response_json = read_all_devices(odl_url_uniconfig_oper, uniconfig_tx_id)\
-        if len(devices) == 0 else read_selected_devices(odl_url_uniconfig_node_oper, devices, uniconfig_tx_id)
+    response_code, response_json = read_all_devices(uniconfig_url_uniconfig_oper, uniconfig_tx_id)\
+        if len(devices) == 0 else read_selected_devices(uniconfig_url_uniconfig_node_oper, devices, uniconfig_tx_id)
 
     if response_code == requests.codes.ok:
-        return {'status': 'COMPLETED', 'output': {'url': odl_url_uniconfig_oper,
+        return {'status': 'COMPLETED', 'output': {'url': uniconfig_url_uniconfig_oper,
                                                   'response_code': response_code,
                                                   'response_body': response_json},
                 'logs': []}
     else:
-        return {'status': 'FAILED', 'output': {'url': odl_url_uniconfig_oper,
+        return {'status': 'FAILED', 'output': {'url': uniconfig_url_uniconfig_oper,
                                                'response_code': response_code,
                                                'response_body': response_json},
                 'logs': []}
@@ -50,23 +50,23 @@ def execute_read_uniconfig_topology_operational(task):
 def execute_read_uniconfig_topology_config(task):
     devices = task['inputData']['devices'] if 'devices' in task['inputData'] else []
     uniconfig_tx_id = task['inputData']['uniconfig_tx_id'] if 'uniconfig_tx_id' in task['inputData'] else ""
-    response_code, response_json = read_all_devices(odl_url_uniconfig_config, uniconfig_tx_id) \
-        if len(devices) == 0 else read_selected_devices(odl_url_uniconfig_node_config, devices, uniconfig_tx_id)
+    response_code, response_json = read_all_devices(uniconfig_url_uniconfig_config, uniconfig_tx_id) \
+        if len(devices) == 0 else read_selected_devices(uniconfig_url_uniconfig_node_config, devices, uniconfig_tx_id)
 
     if response_code == requests.codes.ok:
-        return {'status': 'COMPLETED', 'output': {'url': odl_url_uniconfig_config,
+        return {'status': 'COMPLETED', 'output': {'url': uniconfig_url_uniconfig_config,
                                                   'response_code': response_code,
                                                   'response_body': response_json},
                 'logs': []}
     else:
-        return {'status': 'FAILED', 'output': {'url': odl_url_uniconfig_config,
+        return {'status': 'FAILED', 'output': {'url': uniconfig_url_uniconfig_config,
                                                'response_code': response_code,
                                                'response_body': response_json},
                 'logs': []}
 
 
 def read_all_devices(url, uniconfig_tx_id):
-    r = requests.get(url, headers=add_uniconfig_tx_cookie(uniconfig_tx_id), **additional_odl_request_params)
+    r = requests.get(url, headers=add_uniconfig_tx_cookie(uniconfig_tx_id), **additional_uniconfig_request_params)
     response_code, response_json = parse_response(r)
     return response_code, response_json
 
@@ -82,7 +82,7 @@ def read_selected_devices(url, devices, uniconfig_tx_id):
     }
     devices_array = [device.strip() for device in devices.split(',')]
     for d in devices_array:
-        r = requests.get(Template(url).substitute({"id": d}), headers=add_uniconfig_tx_cookie(uniconfig_tx_id), **additional_odl_request_params)
+        r = requests.get(Template(url).substitute({"id": d}), headers=add_uniconfig_tx_cookie(uniconfig_tx_id), **additional_uniconfig_request_params)
         response_code, response_json_tmp = parse_response(r)
         response_json['topology'][0]['node'].append(response_json_tmp['node'][0])
         if response_code != requests.codes.ok:
@@ -108,7 +108,7 @@ def get_all_devices_as_dynamic_fork_tasks(task):
     add_params = json.loads(add_params) if isinstance(add_params, str) else (add_params if add_params else {})
     uniconfig_tx_id = task['inputData']['uniconfig_tx_id'] if 'uniconfig_tx_id' in task['inputData'] else ""
 
-    response_code, response_json = read_all_devices(odl_url_uniconfig_config_shallow, uniconfig_tx_id)
+    response_code, response_json = read_all_devices(uniconfig_url_uniconfig_config_shallow, uniconfig_tx_id)
 
     if response_code == requests.codes.ok:
         ids = [nodes["node-id"] for nodes in response_json["topology"][0]["node"]]
@@ -128,12 +128,12 @@ def get_all_devices_as_dynamic_fork_tasks(task):
             task_body["subWorkflowParam"]["name"] = subworkflow
             dynamic_tasks.append(task_body)
 
-        return {'status': 'COMPLETED', 'output': {'url': odl_url_uniconfig_config_shallow,
+        return {'status': 'COMPLETED', 'output': {'url': uniconfig_url_uniconfig_config_shallow,
                                                   'dynamic_tasks_i': dynamic_tasks_i,
                                                   'dynamic_tasks': dynamic_tasks},
                 'logs': []}
     else:
-        return {'status': 'FAILED', 'output': {'url': odl_url_uniconfig_config_shallow,
+        return {'status': 'FAILED', 'output': {'url': uniconfig_url_uniconfig_config_shallow,
                                                'response_code': response_code,
                                                'response_body': response_json},
                 'logs': []}
@@ -153,9 +153,9 @@ def read_structured_data(task):
     uri = apply_functions(uri)
     uniconfig_tx_id = task['inputData']['uniconfig_tx_id'] if 'uniconfig_tx_id' in task['inputData'] else ""
 
-    id_url = Template(odl_url_uniconfig_mount).substitute({"id": device_id}) + "/frinx-uniconfig-topology:configuration" + (uri if uri else "")
+    id_url = Template(uniconfig_url_uniconfig_mount).substitute({"id": device_id}) + "/frinx-uniconfig-topology:configuration" + (uri if uri else "")
 
-    r = requests.get(id_url, headers=add_uniconfig_tx_cookie(uniconfig_tx_id), **additional_odl_request_params)
+    r = requests.get(id_url, headers=add_uniconfig_tx_cookie(uniconfig_tx_id), **additional_uniconfig_request_params)
     response_code, response_json = parse_response(r)
 
     if response_code == requests.codes.ok:
@@ -182,10 +182,10 @@ def write_structured_data(task):
     data_json = template if isinstance(template, str) else json.dumps(template if template else {})
     data_json = Template(data_json).substitute(params)
 
-    id_url = Template(odl_url_uniconfig_mount).substitute({"id": device_id}) + "/frinx-uniconfig-topology:configuration" + (uri if uri else "")
+    id_url = Template(uniconfig_url_uniconfig_mount).substitute({"id": device_id}) + "/frinx-uniconfig-topology:configuration" + (uri if uri else "")
     id_url = Template(id_url).substitute(params)
 
-    r = requests.put(id_url, data=data_json, headers=add_uniconfig_tx_cookie(uniconfig_tx_id), **additional_odl_request_params)
+    r = requests.put(id_url, data=data_json, headers=add_uniconfig_tx_cookie(uniconfig_tx_id), **additional_uniconfig_request_params)
     response_code, response_json = parse_response(r)
 
     if response_code == requests.codes.no_content or response_code == requests.codes.created:
@@ -241,9 +241,9 @@ def delete_structured_data(task):
     uri = apply_functions(uri)
     uniconfig_tx_id = task['inputData']['uniconfig_tx_id'] if 'uniconfig_tx_id' in task['inputData'] else ""
 
-    id_url = Template(odl_url_uniconfig_mount).substitute({"id": device_id}) + "/frinx-uniconfig-topology:configuration" + (uri if uri else "")
+    id_url = Template(uniconfig_url_uniconfig_mount).substitute({"id": device_id}) + "/frinx-uniconfig-topology:configuration" + (uri if uri else "")
 
-    r = requests.delete(id_url, headers=add_uniconfig_tx_cookie(uniconfig_tx_id), **additional_odl_request_params)
+    r = requests.delete(id_url, headers=add_uniconfig_tx_cookie(uniconfig_tx_id), **additional_uniconfig_request_params)
     response_code, response_json = parse_response(r)
 
     if response_code == requests.codes.no_content:
@@ -262,9 +262,9 @@ def execute_check_uniconfig_node_exists(task):
     device_id = task['inputData']['device_id']
     uniconfig_tx_id = task['inputData']['uniconfig_tx_id'] if 'uniconfig_tx_id' in task['inputData'] else ""
 
-    id_url = Template(odl_url_uniconfig_mount).substitute({"id": device_id}) + "/frinx-uniconfig-topology:connection-status?content=nonconfig"
+    id_url = Template(uniconfig_url_uniconfig_mount).substitute({"id": device_id}) + "/frinx-uniconfig-topology:connection-status?content=nonconfig"
 
-    r = requests.get(id_url, headers=add_uniconfig_tx_cookie(uniconfig_tx_id), **additional_odl_request_params)
+    r = requests.get(id_url, headers=add_uniconfig_tx_cookie(uniconfig_tx_id), **additional_uniconfig_request_params)
     response_code, response_json = parse_response(r)
 
     if response_code != requests.codes.not_found and response_json["frinx-uniconfig-topology:connection-status"] == "installed":
@@ -291,19 +291,19 @@ commit_input = {
 
 def commit(task):
     uniconfig_tx_id = task['inputData']['uniconfig_tx_id'] if 'uniconfig_tx_id' in task['inputData'] else ""
-    r = requests.post(odl_url_uniconfig_commit,
+    r = requests.post(uniconfig_url_uniconfig_commit,
                       data=json.dumps(create_commit_request(task)),
                       headers=add_uniconfig_tx_cookie(uniconfig_tx_id),
-                      **additional_odl_request_params)
+                      **additional_uniconfig_request_params)
     response_code, response_json = parse_response(r)
 
     if response_code == requests.codes.ok and response_json["output"]["overall-status"] == "complete":
-        return {'status': 'COMPLETED', 'output': {'url': odl_url_uniconfig_commit,
+        return {'status': 'COMPLETED', 'output': {'url': uniconfig_url_uniconfig_commit,
                                                   'response_code': response_code,
                                                   'response_body': response_json},
                 'logs': ["Uniconfig commit successfully"]}
     else:
-        return {'status': 'FAILED', 'output': {'url': odl_url_uniconfig_commit,
+        return {'status': 'FAILED', 'output': {'url': uniconfig_url_uniconfig_commit,
                                                'response_code': response_code,
                                                'response_body': response_json},
                 'logs': ["Unable commit failed"]}
@@ -311,19 +311,19 @@ def commit(task):
 
 def dryrun_commit(task):
     uniconfig_tx_id = task['inputData']['uniconfig_tx_id'] if 'uniconfig_tx_id' in task['inputData'] else ""
-    r = requests.post(odl_url_uniconfig_dryrun_commit,
+    r = requests.post(uniconfig_url_uniconfig_dryrun_commit,
                       data=json.dumps(create_commit_request(task)),
                       headers=add_uniconfig_tx_cookie(uniconfig_tx_id),
-                      **additional_odl_request_params)
+                      **additional_uniconfig_request_params)
     response_code, response_json = parse_response(r)
 
     if response_code == requests.codes.ok and response_json["output"]["overall-status"] == "complete":
-        return {'status': 'COMPLETED', 'output': {'url': odl_url_uniconfig_dryrun_commit,
+        return {'status': 'COMPLETED', 'output': {'url': uniconfig_url_uniconfig_dryrun_commit,
                                                   'response_code': response_code,
                                                   'response_body': response_json},
                 'logs': ["Uniconfig dryrun commit successfull"]}
     else:
-        return {'status': 'FAILED', 'output': {'url': odl_url_uniconfig_dryrun_commit,
+        return {'status': 'FAILED', 'output': {'url': uniconfig_url_uniconfig_dryrun_commit,
                                                'response_code': response_code,
                                                'response_body': response_json},
                 'logs': ["Uniconfig dryrun commit failed"]}
@@ -331,19 +331,19 @@ def dryrun_commit(task):
 
 def checked_commit(task):
     uniconfig_tx_id = task['inputData']['uniconfig_tx_id'] if 'uniconfig_tx_id' in task['inputData'] else ""
-    r = requests.post(odl_url_uniconfig_checked_commit,
+    r = requests.post(uniconfig_url_uniconfig_checked_commit,
                       data=json.dumps(create_commit_request(task)),
                       headers=add_uniconfig_tx_cookie(uniconfig_tx_id),
-                      **additional_odl_request_params)
+                      **additional_uniconfig_request_params)
     response_code, response_json = parse_response(r)
 
     if response_code == requests.codes.ok and response_json["output"]["overall-status"] == "complete":
-        return {'status': 'COMPLETED', 'output': {'url': odl_url_uniconfig_checked_commit,
+        return {'status': 'COMPLETED', 'output': {'url': uniconfig_url_uniconfig_checked_commit,
                                                   'response_code': response_code,
                                                   'response_body': response_json},
                 'logs': ["Uniconfig checked commit successfully"]}
     else:
-        return {'status': 'FAILED', 'output': {'url': odl_url_uniconfig_checked_commit,
+        return {'status': 'FAILED', 'output': {'url': uniconfig_url_uniconfig_checked_commit,
                                                'response_code': response_code,
                                                'response_body': response_json},
                 'logs': ["Unable checked commit failed"]}
@@ -351,19 +351,19 @@ def checked_commit(task):
 
 def calc_diff(task):
     uniconfig_tx_id = task['inputData']['uniconfig_tx_id'] if 'uniconfig_tx_id' in task['inputData'] else ""
-    r = requests.post(odl_url_uniconfig_calculate_diff,
+    r = requests.post(uniconfig_url_uniconfig_calculate_diff,
                       data=json.dumps(create_commit_request(task)),
                       headers=add_uniconfig_tx_cookie(uniconfig_tx_id),
-                      **additional_odl_request_params)
+                      **additional_uniconfig_request_params)
     response_code, response_json = parse_response(r)
 
     if response_code == requests.codes.ok and response_json["output"]["overall-status"] == "complete":
-        return {'status': 'COMPLETED', 'output': {'url': odl_url_uniconfig_calculate_diff,
+        return {'status': 'COMPLETED', 'output': {'url': uniconfig_url_uniconfig_calculate_diff,
                                                   'response_code': response_code,
                                                   'response_body': response_json},
                 'logs': ["Uniconfig calculate diff successfull"]}
     else:
-        return {'status': 'FAILED', 'output': {'url': odl_url_uniconfig_calculate_diff,
+        return {'status': 'FAILED', 'output': {'url': uniconfig_url_uniconfig_calculate_diff,
                                                'response_code': response_code,
                                                'response_body': response_json},
                 'logs': ["Uniconfig calculate diff failed"]}
@@ -371,19 +371,19 @@ def calc_diff(task):
 
 def sync_from_network(task):
     uniconfig_tx_id = task['inputData']['uniconfig_tx_id'] if 'uniconfig_tx_id' in task['inputData'] else ""
-    r = requests.post(odl_url_uniconfig_sync_from_network,
+    r = requests.post(uniconfig_url_uniconfig_sync_from_network,
                       data=json.dumps(create_commit_request(task)),
                       headers=add_uniconfig_tx_cookie(uniconfig_tx_id),
-                      **additional_odl_request_params)
+                      **additional_uniconfig_request_params)
     response_code, response_json = parse_response(r)
 
     if response_code == requests.codes.ok and response_json["output"]["overall-status"] == "complete":
-        return {'status': 'COMPLETED', 'output': {'url': odl_url_uniconfig_sync_from_network,
+        return {'status': 'COMPLETED', 'output': {'url': uniconfig_url_uniconfig_sync_from_network,
                                                   'response_code': response_code,
                                                   'response_body': response_json},
                 'logs': ["Uniconfig sync successfull"]}
     else:
-        return {'status': 'FAILED', 'output': {'url': odl_url_uniconfig_sync_from_network,
+        return {'status': 'FAILED', 'output': {'url': uniconfig_url_uniconfig_sync_from_network,
                                                'response_code': response_code,
                                                'response_body': response_json},
                 'logs': ["Uniconfig sync failed"]}
@@ -391,19 +391,19 @@ def sync_from_network(task):
 
 def replace_config_with_oper(task):
     uniconfig_tx_id = task['inputData']['uniconfig_tx_id'] if 'uniconfig_tx_id' in task['inputData'] else ""
-    r = requests.post(odl_url_uniconfig_replace_config_with_operational,
+    r = requests.post(uniconfig_url_uniconfig_replace_config_with_operational,
                       data=json.dumps(create_commit_request(task)),
                       headers=add_uniconfig_tx_cookie(uniconfig_tx_id),
-                      **additional_odl_request_params)
+                      **additional_uniconfig_request_params)
     response_code, response_json = parse_response(r)
 
     if response_code == requests.codes.ok and response_json["output"]["overall-status"] == "complete":
-        return {'status': 'COMPLETED', 'output': {'url': odl_url_uniconfig_replace_config_with_operational,
+        return {'status': 'COMPLETED', 'output': {'url': uniconfig_url_uniconfig_replace_config_with_operational,
                                                   'response_code': response_code,
                                                   'response_body': response_json},
                 'logs': ["Uniconfig replace successfull"]}
     else:
-        return {'status': 'FAILED', 'output': {'url': odl_url_uniconfig_replace_config_with_operational,
+        return {'status': 'FAILED', 'output': {'url': uniconfig_url_uniconfig_replace_config_with_operational,
                                                'response_code': response_code,
                                                'response_body': response_json},
                 'logs': ["Uniconfig replace failed"]}
@@ -422,19 +422,19 @@ snapshot_template = {
 def create_snapshot(task):
     uniconfig_tx_id = task['inputData']['uniconfig_tx_id'] if 'uniconfig_tx_id' in task['inputData'] else ""
     snapshot_body = create_snapshot_request(task)
-    r = requests.post(odl_url_uniconfig_create_snapshot,
+    r = requests.post(uniconfig_url_uniconfig_create_snapshot,
                       data=json.dumps(snapshot_body),
                       headers=add_uniconfig_tx_cookie(uniconfig_tx_id),
-                      **additional_odl_request_params)
+                      **additional_uniconfig_request_params)
     response_code, response_json = parse_response(r)
 
     if response_code == requests.codes.ok and response_json["output"]["overall-status"] == "complete":
-        return {'status': 'COMPLETED', 'output': {'url': odl_url_uniconfig_create_snapshot,
+        return {'status': 'COMPLETED', 'output': {'url': uniconfig_url_uniconfig_create_snapshot,
                                                   'response_code': response_code,
                                                   'response_body': response_json},
                 'logs': ["Uniconfig create snapshot successful"]}
     else:
-        return {'status': 'FAILED', 'output': {'url': odl_url_uniconfig_create_snapshot,
+        return {'status': 'FAILED', 'output': {'url': uniconfig_url_uniconfig_create_snapshot,
                                                'response_code': response_code,
                                                'response_body': response_json},
                 'logs': ["Uniconfig create snapshot failed"]}
@@ -482,19 +482,19 @@ def delete_snapshot(task):
     snapshot_body["input"]["name"] = task["inputData"]["name"]
     uniconfig_tx_id = task['inputData']['uniconfig_tx_id'] if 'uniconfig_tx_id' in task['inputData'] else ""
 
-    r = requests.post(odl_url_uniconfig_delete_snapshot,
+    r = requests.post(uniconfig_url_uniconfig_delete_snapshot,
                       data=json.dumps(snapshot_body),
                       headers=add_uniconfig_tx_cookie(uniconfig_tx_id),
-                      **additional_odl_request_params)
+                      **additional_uniconfig_request_params)
     response_code, response_json = parse_response(r)
 
     if response_code == requests.codes.ok and response_json["output"]["overall-status"] == "complete":
-        return {'status': 'COMPLETED', 'output': {'url': odl_url_uniconfig_delete_snapshot,
+        return {'status': 'COMPLETED', 'output': {'url': uniconfig_url_uniconfig_delete_snapshot,
                                                   'response_code': response_code,
                                                   'response_body': response_json},
                 'logs': ["Uniconfig delete snapshot successful"]}
     else:
-        return {'status': 'FAILED', 'output': {'url': odl_url_uniconfig_delete_snapshot,
+        return {'status': 'FAILED', 'output': {'url': uniconfig_url_uniconfig_delete_snapshot,
                                                'response_code': response_code,
                                                'response_body': response_json},
                 'logs': ["Uniconfig delete snapshot failed"]}
@@ -503,19 +503,19 @@ def delete_snapshot(task):
 def replace_config_with_snapshot(task):
     uniconfig_tx_id = task['inputData']['uniconfig_tx_id'] if 'uniconfig_tx_id' in task['inputData'] else ""
     snapshot_body = create_snapshot_request(task)
-    r = requests.post(odl_url_uniconfig_replace_config_with_snapshot,
+    r = requests.post(uniconfig_url_uniconfig_replace_config_with_snapshot,
                       data=json.dumps(snapshot_body),
                       headers=add_uniconfig_tx_cookie(uniconfig_tx_id),
-                      **additional_odl_request_params)
+                      **additional_uniconfig_request_params)
     response_code, response_json = parse_response(r)
 
     if response_code == requests.codes.ok and response_json["output"]["overall-status"] == "complete":
-        return {'status': 'COMPLETED', 'output': {'url': odl_url_uniconfig_replace_config_with_snapshot,
+        return {'status': 'COMPLETED', 'output': {'url': uniconfig_url_uniconfig_replace_config_with_snapshot,
                                                   'response_code': response_code,
                                                   'response_body': response_json},
                 'logs': ["Uniconfig replace config with snapshot was successful"]}
     else:
-        return {'status': 'FAILED', 'output': {'url': odl_url_uniconfig_replace_config_with_snapshot,
+        return {'status': 'FAILED', 'output': {'url': uniconfig_url_uniconfig_replace_config_with_snapshot,
                                                'response_code': response_code,
                                                'response_body': response_json},
                 'logs': ["Uniconfig replace config with snapshot failed"]}
@@ -523,11 +523,11 @@ def replace_config_with_snapshot(task):
 
 def create_transaction(task):
     max_age_sec = task["inputData"]["maxAgeSec"] if 'maxAgeSec' in task['inputData'] else ""
-    id_url = Template(odl_url_uniconfig_create_transaction).substitute({"sec": max_age_sec})
+    id_url = Template(uniconfig_url_uniconfig_create_transaction).substitute({"sec": max_age_sec})
     r = requests.post(id_url,
                       data=json.dumps({}),
-                      headers=odl_headers,
-                      **additional_odl_request_params)
+                      headers=uniconfig_headers,
+                      **additional_uniconfig_request_params)
     response_code, response_json = parse_response(r)
     if response_code == requests.codes.created:
         response_json = parse_header(r)
@@ -545,18 +545,18 @@ def create_transaction(task):
 def close_transaction(task):
     uniconfig_tx_id = task["inputData"]["uniconfig_tx_id"]
     custom_header = {"Cookie": "UNICONFIGTXID="+uniconfig_tx_id} if uniconfig_tx_id else {"Cookie": ""}
-    r = requests.post(odl_url_uniconfig_close_transaction,
+    r = requests.post(uniconfig_url_uniconfig_close_transaction,
                       data=json.dumps({}),
                       headers=custom_header,
-                      **additional_odl_request_params)
+                      **additional_uniconfig_request_params)
     response_code, response_json = parse_response(r)
     if response_code == requests.codes.ok:
-        return {'status': 'COMPLETED', 'output': {'url': odl_url_uniconfig_close_transaction,
+        return {'status': 'COMPLETED', 'output': {'url': uniconfig_url_uniconfig_close_transaction,
                                                   'response_code': response_code,
                                                   'response_body': response_json},
                 'logs': ["Uniconfig close transaction was successful"]}
     else:
-        return {'status': 'FAILED', 'output': {'url': odl_url_uniconfig_close_transaction,
+        return {'status': 'FAILED', 'output': {'url': uniconfig_url_uniconfig_close_transaction,
                                                'response_code': response_code,
                                                'response_body': response_json},
                 'logs': ["Uniconfig close transaction failed"]}

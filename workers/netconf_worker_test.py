@@ -3,7 +3,7 @@ from unittest.mock import patch
 import unittest
 
 import netconf_worker
-from frinx_rest import odl_url_base
+from frinx_rest import uniconfig_url_base
 
 netconf_node_connecting = {
     "node": [
@@ -105,7 +105,7 @@ class TestMount(unittest.TestCase):
                 {"inputData": {"device_id": "xr6", "host": "192.168.1.1", "port": "830", "keepalive-delay": "1000",
                                "tcp-only": "false", "username": "name", "password": "password"}})
             self.assertEqual(request["status"], "COMPLETED")
-            self.assertEqual(request["output"]["url"], odl_url_base
+            self.assertEqual(request["output"]["url"], uniconfig_url_base
                              + "/data/network-topology:network-topology/topology=topology-netconf/node=xr6")
             self.assertEqual(request["output"]["response_code"], 201)
             self.assertEqual(request["output"]["response_body"], {})
@@ -117,7 +117,7 @@ class TestMount(unittest.TestCase):
                 {"inputData": {"device_id": "xr6", "host": "192.168.1.1", "port": "830", "keepalive-delay": "1000",
                                "tcp-only": "false", "username": "name", "password": "password"}})
             self.assertEqual(request["status"], "COMPLETED")
-            self.assertEqual(request["output"]["url"], odl_url_base
+            self.assertEqual(request["output"]["url"], uniconfig_url_base
                              + "/data/network-topology:network-topology/topology=topology-netconf/node=xr6")
             self.assertEqual(request["output"]["response_code"], 204)
             self.assertEqual(request["output"]["response_body"], {})
@@ -129,7 +129,7 @@ class TestUnmount(unittest.TestCase):
             mock.return_value = MockResponse(bytes(json.dumps({}), encoding='utf-8'), 204)
             request = netconf_worker.execute_unmount_netconf({"inputData": {"device_id": "xr6"}})
             self.assertEqual(request["status"], "COMPLETED")
-            self.assertEqual(request["output"]["url"], odl_url_base
+            self.assertEqual(request["output"]["url"], uniconfig_url_base
                              + "/data/network-topology:network-topology/topology=topology-netconf/node=xr6")
             self.assertEqual(request["output"]["response_code"], 204)
             self.assertEqual(request["output"]["response_body"], {})
@@ -143,7 +143,7 @@ class TestReadStructuredData(unittest.TestCase):
                 {"inputData": {"device_id": "xr5", "uri": "/openconfig-system/system/alarms"}})
             self.assertEqual(request["status"], "COMPLETED")
             self.assertEqual(request["output"]["url"],
-                             odl_url_base + "/data/network-topology:network-topology/topology=topology-netconf/node=xr5"
+                             uniconfig_url_base + "/data/network-topology:network-topology/topology=topology-netconf/node=xr5"
                                             "/yang-ext:mount/openconfig-system/system/alarms")
             self.assertEqual(request["output"]["response_code"], 200)
             self.assertEqual(len(request["output"]["response_body"]["alarms"]["alarm"]), 2)
@@ -172,7 +172,7 @@ class TestCheckCliConnected(unittest.TestCase):
             mock.return_value = MockResponse(bytes(json.dumps(netconf_node_connecting), encoding='utf-8'), 200)
             request = netconf_worker.execute_check_connected_netconf({"inputData": {"device_id": "xr6"}})
             self.assertEqual(request["status"], "FAILED")
-            self.assertEqual(request["output"]["url"], odl_url_base
+            self.assertEqual(request["output"]["url"], uniconfig_url_base
                              + "/data/network-topology:network-topology/topology=topology-netconf"
                                "/node=xr6?content=nonconfig")
             self.assertEqual(request["output"]["response_body"]["node"][0]["netconf-node-topology:connection-status"],
@@ -183,7 +183,7 @@ class TestCheckCliConnected(unittest.TestCase):
             mock.return_value = MockResponse(bytes(json.dumps(netconf_node_connected), encoding='utf-8'), 200)
             request = netconf_worker.execute_check_connected_netconf({"inputData": {"device_id": "xr6"}})
             self.assertEqual(request["status"], "COMPLETED")
-            self.assertEqual(request["output"]["url"], odl_url_base
+            self.assertEqual(request["output"]["url"], uniconfig_url_base
                              + "/data/network-topology:network-topology/topology=topology-netconf"
                                "/node=xr6?content=nonconfig")
             self.assertEqual(request["output"]["response_body"]["node"][0]["netconf-node-topology:connection-status"],
@@ -196,7 +196,7 @@ class TestCheckNetconfIdAvailable(unittest.TestCase):
             mock.return_value = MockResponse(bytes(json.dumps(netconf_node_connected), encoding='utf-8'), 200)
             request = netconf_worker.execute_check_netconf_id_available({"inputData": {"device_id": "xr6"}})
             self.assertEqual(request["status"], "FAILED")
-            self.assertEqual(request["output"]["url"], odl_url_base
+            self.assertEqual(request["output"]["url"], uniconfig_url_base
                              + "/data/network-topology:network-topology"
                                "/topology=topology-netconf/node=xr6?content=config")
 
@@ -205,7 +205,7 @@ class TestCheckNetconfIdAvailable(unittest.TestCase):
             mock.return_value = MockResponse(bytes(json.dumps(netconf_node_non_exist), encoding='utf-8'), 404)
             request = netconf_worker.execute_check_netconf_id_available({"inputData": {"device_id": "xr6"}})
             self.assertEqual(request["status"], "COMPLETED")
-            self.assertEqual(request["output"]["url"], odl_url_base
+            self.assertEqual(request["output"]["url"], uniconfig_url_base
                              + "/data/network-topology:network-topology"
                                "/topology=topology-netconf/node=xr6?content=config")
 

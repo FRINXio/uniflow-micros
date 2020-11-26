@@ -5,7 +5,7 @@ from unittest.mock import patch
 import unittest
 
 import uniconfig_worker
-from frinx_rest import odl_url_base
+from frinx_rest import uniconfig_url_base
 
 xr5_response = {
     'topology': [{
@@ -170,7 +170,7 @@ class TestExecuteReadUniconfigTopologyOperational(unittest.TestCase):
             mock.return_value = 200, xr5_response
             request = uniconfig_worker.execute_read_uniconfig_topology_operational({"inputData": {"devices": ""}})
             self.assertEqual(request["status"], "COMPLETED")
-            self.assertEqual(request["output"]["url"], odl_url_base
+            self.assertEqual(request["output"]["url"], uniconfig_url_base
                              + "/data/network-topology:network-topology/topology=uniconfig?content=nonconfig")
             self.assertEqual(request["output"]["response_code"], 200)
             self.assertEqual(request["output"]["response_body"]["topology"][0]["topology-id"], "uniconfig")
@@ -181,7 +181,7 @@ class TestExecuteReadUniconfigTopologyOperational(unittest.TestCase):
             mock.return_value = 200, xr5_response
             request = uniconfig_worker.execute_read_uniconfig_topology_operational({"inputData": {"devices": "xr5"}})
             self.assertEqual(request["status"], "COMPLETED")
-            self.assertEqual(request["output"]["url"], odl_url_base
+            self.assertEqual(request["output"]["url"], uniconfig_url_base
                              + "/data/network-topology:network-topology/topology=uniconfig?content=nonconfig")
             self.assertEqual(request["output"]["response_code"], 200)
             self.assertEqual(request["output"]["response_body"]["topology"][0]["topology-id"], "uniconfig")
@@ -194,7 +194,7 @@ class TestExecuteReadUniconfigTopologyConfig(unittest.TestCase):
             mock.return_value = 200, xr5_response
             request = uniconfig_worker.execute_read_uniconfig_topology_config({"inputData": {"devices": ""}})
             self.assertEqual(request["status"], "COMPLETED")
-            self.assertEqual(request["output"]["url"], odl_url_base
+            self.assertEqual(request["output"]["url"], uniconfig_url_base
                              + "/data/network-topology:network-topology/topology=uniconfig?content=config")
             self.assertEqual(request["output"]["response_code"], 200)
             self.assertEqual(request["output"]["response_body"]["topology"][0]["topology-id"], "uniconfig")
@@ -205,7 +205,7 @@ class TestExecuteReadUniconfigTopologyConfig(unittest.TestCase):
             mock.return_value = 200, xr5_response
             request = uniconfig_worker.execute_read_uniconfig_topology_config({"inputData": {"devices": "xr5"}})
             self.assertEqual(request["status"], "COMPLETED")
-            self.assertEqual(request["output"]["url"], odl_url_base
+            self.assertEqual(request["output"]["url"], uniconfig_url_base
                              + "/data/network-topology:network-topology/topology=uniconfig?content=config")
             self.assertEqual(request["output"]["response_code"], 200)
             self.assertEqual(request["output"]["response_body"]["topology"][0]["topology-id"], "uniconfig")
@@ -239,7 +239,7 @@ class TestReadStructuredData(unittest.TestCase):
                 {"inputData": {"device_id": "xr5", "uri": "/frinx-openconfig-interfaces:interfaces"}})
             self.assertEqual(request["status"], "COMPLETED")
             self.assertEqual(request["output"]["url"],
-                             odl_url_base + "/data/network-topology:network-topology/topology=uniconfig/node=xr5"
+                             uniconfig_url_base + "/data/network-topology:network-topology/topology=uniconfig/node=xr5"
                                             "/frinx-uniconfig-topology:configuration"
                                             "/frinx-openconfig-interfaces:interfaces")
             self.assertEqual(request["output"]["response_code"], 200)
@@ -278,7 +278,7 @@ class TestWriteStructuredData(unittest.TestCase):
                                "params": {}}})
             self.assertEqual(request["status"], "COMPLETED")
             self.assertEqual(request["output"]["url"],
-                             odl_url_base + "/data/network-topology:network-topology/topology=uniconfig/node=xr5/"
+                             uniconfig_url_base + "/data/network-topology:network-topology/topology=uniconfig/node=xr5/"
                                             "frinx-uniconfig-topology:configuration/"
                                             "frinx-openconfig-interfaces:interfaces/interface=Loopback01")
             self.assertEqual(request["output"]["response_code"], 201)
@@ -298,7 +298,7 @@ class TestWriteStructuredData(unittest.TestCase):
                                "params": {}}})
             self.assertEqual(request["status"], "FAILED")
             self.assertEqual(request["output"]["url"],
-                             odl_url_base + "/data/network-topology:network-topology/topology=uniconfig/node=/"
+                             uniconfig_url_base + "/data/network-topology:network-topology/topology=uniconfig/node=/"
                                             "frinx-uniconfig-topology:configuration/"
                                             "frinx-openconfig-interfaces:interfaces/interface=Loopback01")
             self.assertEqual(request["output"]["response_code"], 404)
@@ -318,7 +318,7 @@ class TestWriteStructuredData(unittest.TestCase):
                                "params": {}}})
             self.assertEqual(request["status"], "FAILED")
             self.assertEqual(request["output"]["url"],
-                             odl_url_base + "/data/network-topology:network-topology/topology=uniconfig/node=xr5/"
+                             uniconfig_url_base + "/data/network-topology:network-topology/topology=uniconfig/node=xr5/"
                                             "frinx-uniconfig-topology:configuration/"
                                             "frinx-openconfig-interfaces:interfaces/interface=Loopback01")
             self.assertEqual(request["output"]["response_code"], 400)

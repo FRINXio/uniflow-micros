@@ -8,7 +8,7 @@ from datetime import datetime
 import requests
 from conductor.ConductorWorker import ConductorWorker
 
-from frinx_rest import conductor_url_base, odl_headers
+from frinx_rest import conductor_url_base, uniconfig_headers
 
 DEFAULT_TASK_DEFINITION = {
     "name": "",
@@ -42,7 +42,7 @@ class ExceptionHandlingConductorWrapper(ConductorWorker):
         try:
             r = requests.post(conductor_task_url,
                               data=json.dumps([task_meta]),
-                              headers=odl_headers)
+                              headers=uniconfig_headers)
             # response_code = r.status_code
         except Exception as err:
             print('Error while registering task ' + traceback.format_exc())

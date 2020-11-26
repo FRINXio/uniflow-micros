@@ -3,7 +3,7 @@ from unittest.mock import patch
 import unittest
 
 import cli_worker
-from frinx_rest import odl_url_base
+from frinx_rest import uniconfig_url_base
 
 exec_and_read_rpc = {
     "output": {
@@ -123,7 +123,7 @@ class TestMount(unittest.TestCase):
                 {"inputData": {"device_id": "xr5", "host": "192.168.1.1", "port": "22", "protocol": "ssh",
                                "type": "ios xr", "version": "5.3.4", "username": "name", "password": "password"}})
             self.assertEqual(request["status"], "COMPLETED")
-            self.assertEqual(request["output"]["url"], odl_url_base
+            self.assertEqual(request["output"]["url"], uniconfig_url_base
                              + "/data/network-topology:network-topology/topology=cli/node=xr5")
             self.assertEqual(request["output"]["response_code"], 201)
             self.assertEqual(request["output"]["response_body"], {})
@@ -135,7 +135,7 @@ class TestMount(unittest.TestCase):
                 {"inputData": {"device_id": "xr5", "host": "192.168.1.1", "port": "22", "protocol": "ssh",
                                "type": "ios xr", "version": "5.3.4", "username": "name", "password": "password"}})
             self.assertEqual(request["status"], "COMPLETED")
-            self.assertEqual(request["output"]["url"], odl_url_base
+            self.assertEqual(request["output"]["url"], uniconfig_url_base
                              + "/data/network-topology:network-topology/topology=cli/node=xr5")
             self.assertEqual(request["output"]["response_code"], 204)
             self.assertEqual(request["output"]["response_body"], {})
@@ -148,7 +148,7 @@ class TestUnmount(unittest.TestCase):
             request = cli_worker.execute_unmount_cli(
                 {"inputData": {"device_id": "xr5"}})
             self.assertEqual(request["status"], "COMPLETED")
-            self.assertEqual(request["output"]["url"], odl_url_base
+            self.assertEqual(request["output"]["url"], uniconfig_url_base
                              + "/data/network-topology:network-topology/topology=cli/node=xr5")
             self.assertEqual(request["output"]["response_code"], 204)
             self.assertEqual(request["output"]["response_body"], {})
@@ -161,7 +161,7 @@ class TestExecuteAndReadRpcCli(unittest.TestCase):
             request = cli_worker.execute_and_read_rpc_cli(
                 {"inputData": {"device_id": "xr5", "template": "show running-config", "params": ""}})
             self.assertEqual(request["status"], "COMPLETED")
-            self.assertEqual(request["output"]["url"], odl_url_base
+            self.assertEqual(request["output"]["url"], uniconfig_url_base
                              + "/operations/network-topology:network-topology/topology=cli/"
                                "node=xr5/yang-ext:mount/cli-unit-generic:execute-and-read")
             self.assertEqual(request["output"]["response_body"], exec_and_read_rpc)
@@ -172,7 +172,7 @@ class TestExecuteAndReadRpcCli(unittest.TestCase):
             request = cli_worker.execute_and_read_rpc_cli(
                 {"inputData": {"device_id": "xr5", "template": "show running-config", "params": ""}})
             self.assertEqual(request["status"], "FAILED")
-            self.assertEqual(request["output"]["url"], odl_url_base
+            self.assertEqual(request["output"]["url"], uniconfig_url_base
                              + "/operations/network-topology:network-topology/topology=cli/"
                                "node=xr5/yang-ext:mount/cli-unit-generic:execute-and-read")
             self.assertEqual(request["output"]["response_body"], exec_and_read_rpc_no_device)
@@ -184,7 +184,7 @@ class TestCheckCliConnected(unittest.TestCase):
             mock.return_value = MockResponse(bytes(json.dumps(cli_node_connecting), encoding='utf-8'), 200)
             request = cli_worker.execute_check_connected_cli({"inputData": {"device_id": "xr5"}})
             self.assertEqual(request["status"], "FAILED")
-            self.assertEqual(request["output"]["url"], odl_url_base
+            self.assertEqual(request["output"]["url"], uniconfig_url_base
                              + "/data/network-topology:network-topology/topology=cli/node=xr5?content=nonconfig")
             self.assertEqual(request["output"]["response_body"]["node"][0]["cli-topology:connection-status"],
                              "connecting")
@@ -194,7 +194,7 @@ class TestCheckCliConnected(unittest.TestCase):
             mock.return_value = MockResponse(bytes(json.dumps(cli_node_connected), encoding='utf-8'), 200)
             request = cli_worker.execute_check_connected_cli({"inputData": {"device_id": "xr5"}})
             self.assertEqual(request["status"], "COMPLETED")
-            self.assertEqual(request["output"]["url"], odl_url_base
+            self.assertEqual(request["output"]["url"], uniconfig_url_base
                              + "/data/network-topology:network-topology/topology=cli/node=xr5?content=nonconfig")
             self.assertEqual(request["output"]["response_body"]["node"][0]["cli-topology:connection-status"],
                              "connected")
@@ -206,7 +206,7 @@ class TestCheckCliIdAvailable(unittest.TestCase):
             mock.return_value = MockResponse(bytes(json.dumps(cli_node_connected), encoding='utf-8'), 200)
             request = cli_worker.execute_check_cli_id_available({"inputData": {"device_id": "xr5"}})
             self.assertEqual(request["status"], "FAILED")
-            self.assertEqual(request["output"]["url"], odl_url_base
+            self.assertEqual(request["output"]["url"], uniconfig_url_base
                              + "/data/network-topology:network-topology/topology=cli/node=xr5")
 
     def test_execute_check_cli_id_available_non_exist(self):
@@ -214,7 +214,7 @@ class TestCheckCliIdAvailable(unittest.TestCase):
             mock.return_value = MockResponse(bytes(json.dumps(cli_node_non_exist), encoding='utf-8'), 404)
             request = cli_worker.execute_check_cli_id_available({"inputData": {"device_id": "xr5"}})
             self.assertEqual(request["status"], "COMPLETED")
-            self.assertEqual(request["output"]["url"], odl_url_base
+            self.assertEqual(request["output"]["url"], uniconfig_url_base
                              + "/data/network-topology:network-topology/topology=cli/node=xr5")
 
 
@@ -224,7 +224,7 @@ class TestExecuteReadCliTopologyOperational(unittest.TestCase):
             mock.return_value = MockResponse(bytes(json.dumps(cli_oper_without_device), encoding='utf-8'), 200)
             request = cli_worker.execute_read_cli_topology_operational({})
             self.assertEqual(request["status"], "COMPLETED")
-            self.assertEqual(request["output"]["url"], odl_url_base
+            self.assertEqual(request["output"]["url"], uniconfig_url_base
                              + "/data/network-topology:network-topology/topology=cli?content=nonconfig")
             self.assertEqual(request["output"]["response_body"]["topology"][0]["topology-id"], "cli")
 
@@ -233,7 +233,7 @@ class TestExecuteReadCliTopologyOperational(unittest.TestCase):
             mock.return_value = MockResponse(bytes(json.dumps(cli_oper_with_device), encoding='utf-8'), 200)
             request = cli_worker.execute_read_cli_topology_operational({})
             self.assertEqual(request["status"], "COMPLETED")
-            self.assertEqual(request["output"]["url"], odl_url_base
+            self.assertEqual(request["output"]["url"], uniconfig_url_base
                              + "/data/network-topology:network-topology/topology=cli?content=nonconfig")
             self.assertEqual(request["output"]["response_body"]["topology"][0]["topology-id"], "cli")
             self.assertEqual(request["output"]["response_body"]["topology"][0]["node"][0]["node-id"], "xr5")
@@ -266,7 +266,7 @@ class TestExecuteGetCliJournal(unittest.TestCase):
             mock.return_value = MockResponse(bytes(json.dumps(cli_read_journal), encoding='utf-8'), 200)
             request = cli_worker.execute_get_cli_journal({"inputData": {"device_id": "xr5"}})
             self.assertEqual(request["status"], "COMPLETED")
-            self.assertEqual(request["output"]["url"], odl_url_base
+            self.assertEqual(request["output"]["url"], uniconfig_url_base
                              + "/operations/network-topology:network-topology/topology=cli"
                                "/node=xr5/yang-ext:mount/journal:read-journal?content=nonconfig")
             self.assertEqual(request["output"]["response_body"]["output"]["journal"],
@@ -277,7 +277,7 @@ class TestExecuteGetCliJournal(unittest.TestCase):
             mock.return_value = MockResponse(bytes(json.dumps(exec_and_read_rpc_no_device), encoding='utf-8'), 404)
             request = cli_worker.execute_get_cli_journal({"inputData": {"device_id": "xr5"}})
             self.assertEqual(request["status"], "FAILED")
-            self.assertEqual(request["output"]["url"], odl_url_base
+            self.assertEqual(request["output"]["url"], uniconfig_url_base
                              + "/operations/network-topology:network-topology/topology=cli"
                                "/node=xr5/yang-ext:mount/journal:read-journal?content=nonconfig")
             self.assertEqual(request["output"]["response_body"], exec_and_read_rpc_no_device)

@@ -21,7 +21,7 @@ for file in "$DIR"/*; do
 done
 }
 
-host=conductor-client-server
+host=conductor-server
 while [ "$1" != "" ];
 do
 case $1 in

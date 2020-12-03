@@ -18,11 +18,13 @@ uniconfig_credentials = ('admin', 'admin')
 # uniconfig_credentials = (username, password)
 uniconfig_headers = {"Content-Type": "application/json"}
 elastic_headers = {"Content-Type": "application/json"}
+conductor_headers = {"Content-Type": "application/json"}
 
 additional_uniconfig_request_params = {
     'auth': uniconfig_credentials,
     'verify': False
 }
+
 
 def parse_response(r):
     decode = r.content.decode('utf8')

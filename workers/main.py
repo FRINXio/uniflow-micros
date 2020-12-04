@@ -8,7 +8,7 @@ import common_worker
 import http_worker
 from import_workflows import import_workflows 
 
-workflows_folder_path = './workflows'
+workflows_folder_path = '../workflows'
 
 
 def main():

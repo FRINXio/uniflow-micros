@@ -9,7 +9,7 @@ import http_worker
 import os
 import requests
 
-workflows_folder_path = './workflows'
+workflows_folder_path = '../workflows'
 workflow_import_url = conductor_url_base + '/metadata/workflow'
 
 

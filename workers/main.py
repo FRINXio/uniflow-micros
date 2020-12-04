@@ -6,11 +6,9 @@ import netconf_worker
 import uniconfig_worker
 import common_worker
 import http_worker
-import os
-import requests
+from import_workflows import import_workflows 
 
-workflows_folder_path = '../workflows'
-workflow_import_url = conductor_url_base + '/metadata/workflow'
+workflows_folder_path = './workflows'
 
 
 def main():
@@ -32,28 +30,6 @@ def register_workers(cc):
     uniconfig_worker.start(cc)
     common_worker.start(cc)
     http_worker.start(cc)
-
-
-def import_workflows(path):
-    if os.path.isdir(path):
-        print("\nIt is a directory")
-        with os.scandir(path) as entries:
-            for entry in entries:
-                if entry.is_file():
-                    try:
-                        print('Importing workflow ' + entry.name)
-                        with open(entry, 'rb') as payload:
-                            r = requests.post(workflow_import_url,
-                                              data=payload, headers=conductor_headers)
-                    except Exception as err:
-                        print('Error while registering task ' + traceback.format_exc())
-                        raise err
-                elif entry.is_dir():
-                    import_workflows(entry.path)
-                else:
-                    print(entry)
-    else:
-        print("Path not a directory")
 
 
 if __name__ == '__main__':

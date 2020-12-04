@@ -32,13 +32,7 @@ RUN pip3 install marshmallow-dataclass
 RUN pip3 install jinja2
 
 WORKDIR /home/app/workers
-CMD [ "python3", "main.py" ]
 RUN python3 -m unittest uniconfig_worker_test.py
 RUN python3 -m unittest netconf_worker_test.py
 RUN python3 -m unittest cli_worker_test.py
-
-WORKDIR /home/app/
-
-# This can be run from docker-compose aswell
-# RUN ["chmod", "+x", "/home/app/wait_for_it.sh"]
-# CMD ["/home/app/wait_for_it.sh", "-t", "180",  "conductor-server:8080", "--", "python", "/home/app/workers/main.py"]
+ENTRYPOINT [ "python3", "main.py" ]

@@ -48,16 +48,12 @@
       "type": "SIMPLE"
     },
     {
-      "name": "sub_unmount",
+      "name": "CLI_unmount_cli",
       "taskReferenceName": "unmount",
       "inputParameters": {
         "device_id": "${workflow.input.device_id}"
       },
-      "type": "SUB_WORKFLOW",
-      "subWorkflowParam": {
-        "name": "Unmount_cli_device",
-        "version": 1
-      }
+      "type": "SIMPLE"
     }
   ],
   "outputParameters": {

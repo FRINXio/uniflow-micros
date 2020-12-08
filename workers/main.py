@@ -6,16 +6,24 @@ import netconf_worker
 import uniconfig_worker
 import common_worker
 import http_worker
-from import_workflows import import_workflows 
+from import_workflows import import_workflows
+import os
 
 workflows_folder_path = '../workflows'
+healtchchek_file_path = '../healthcheck'
 
 
 def main():
+    if os.path.exists(healtchchek_file_path):
+        os.remove(healtchchek_file_path)
+
     print('Starting FRINX workers')
     cc = worker_wrapper.ExceptionHandlingConductorWrapper(conductor_url_base, 1, 1)
     register_workers(cc)
     import_workflows(workflows_folder_path)
+
+    with open(healtchchek_file_path, 'w'): pass
+
 
 
 

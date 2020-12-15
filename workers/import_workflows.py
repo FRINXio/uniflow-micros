@@ -8,7 +8,7 @@ workflow_import_url = conductor_url_base + '/metadata/workflow'
 
 def import_workflows(path):
     if os.path.isdir(path):
-        print("\nIt is a directory")
+        print('Importing workflows from folder ' + path)
         with os.scandir(path) as entries:
             for entry in entries:
                 if entry.is_file():
@@ -17,12 +17,13 @@ def import_workflows(path):
                         with open(entry, 'rb') as payload:
                             r = requests.post(workflow_import_url,
                                               data=payload, headers=conductor_headers)
+                            print('Response - ' + r.text)
                     except Exception as err:
-                        print('Error while registering task ' + traceback.format_exc())
+                        print('Error while registering workflow ' + traceback.format_exc())
                         raise err
                 elif entry.is_dir():
                     import_workflows(entry.path)
                 else:
-                    print(entry)
+                    print('Ignoring, unknown type ' + entry)
     else:
-        print("Path not a directory")
+        print('Path to workflows ' + path + ' is not a directory.')

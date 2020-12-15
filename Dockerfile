@@ -10,14 +10,14 @@ WORKDIR /home/app/conductor-client/python
 RUN pip3 install setuptools
 RUN python3 setup.py install
 
-# Copy workers and workflows
-COPY ./workers /home/app/workers
-COPY ./workflows /home/app/workflows
-
 # Install dependencies of workers
 COPY requirements.txt /home/app/requirements.txt
 WORKDIR /home/app
 RUN pip3 install -r requirements.txt
+
+# Copy workers and workflows
+COPY ./workers /home/app/workers
+COPY ./workflows /home/app/workflows
 
 WORKDIR /home/app/workers
 RUN python3 -m unittest uniconfig_worker_test.py

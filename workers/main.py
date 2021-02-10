@@ -7,29 +7,63 @@ import uniconfig_worker
 import common_worker
 import http_worker
 from import_workflows import import_workflows
-import os
+import requests
+import flask
 
 workflows_folder_path = '../workflows'
-healtchchek_file_path = '../healthcheck'
+
+app = flask.Flask(__name__)
+cc = None
+
+
+@app.route('/api/readiness', methods=['GET'])
+def readinessCheck():
+    # worker_wrapper check
+    if not checkMyself():
+        flask.abort('Internal error')
+    # conductor server check
+    conductor_status = checkConductorConnection()
+    if 199 < conductor_status < 300:
+        return str(conductor_status)
+    else:
+        flask.abort(conductor_status)
+
+
+def checkConductorConnection():
+    try:
+        return requests.get(conductor_url_base + '/health').status_code
+    except requests.exceptions.RequestException as err:
+        print("Something is wrong:", err)
+        return flask.abort(err)
+    except requests.exceptions.HTTPError as errh:
+        print("Http Error:", errh)
+        return flask.abort(errh)
+    except requests.exceptions.ConnectionError as errc:
+        print("Error Connecting:", errc)
+        return flask.abort(errc)
+    except requests.exceptions.Timeout as errt:
+        print("Timeout Error:", errt)
+        return flask.abort(errt)
+
+
+def checkMyself():
+    try:
+        if cc.timestamp:
+            return True
+        else:
+            return False
+    except ...:
+        return False
 
 
 def main():
-    if os.path.exists(healtchchek_file_path):
-        os.remove(healtchchek_file_path)
-
     print('Starting FRINX workers')
+    global cc
     cc = worker_wrapper.ExceptionHandlingConductorWrapper(conductor_url_base, 1, 1)
     register_workers(cc)
     import_workflows(workflows_folder_path)
 
-    with open(healtchchek_file_path, 'w'): pass
-
-
-
-
-    # block
-    while 1:
-        time.sleep(1000)
+    app.run(port=5005)
 
 
 def register_workers(cc):

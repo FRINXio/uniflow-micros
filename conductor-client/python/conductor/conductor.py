@@ -32,9 +32,13 @@ class BaseClient(object):
         self.baseURL = baseURL
         self.baseResource = baseResource
 
-    def get(self, resPath, queryParams=None):
+    def get(self, resPath, queryParams=None, headers=None):
         theUrl = "{}/{}".format(self.baseURL, resPath)
-        resp = requests.get(theUrl, params=queryParams)
+        theHeader = self.headers
+        if headers is not None:
+            theHeader = self.mergeTwoDicts(self.headers, headers)
+
+        resp = requests.get(theUrl, params=queryParams, headers=theHeader)
         self.__checkForSuccess(resp)
         if(resp.content == b''):
             return None
@@ -184,7 +188,7 @@ class TaskClient(BaseClient):
         headers = {'Accept': 'text/plain'}
         self.post(url, None, taskObj, headers)
 
-    def pollForTask(self, taskType, workerid, domain=None):
+    def pollForTask(self, taskType, workerid, domain=None, headers=None):
         url = self.makeUrl('poll/{}', taskType)
         params = {}
         params['workerid'] = workerid
@@ -192,12 +196,12 @@ class TaskClient(BaseClient):
             params['domain'] = domain
 
         try:
-            return self.get(url, params)
+            return self.get(url, params, headers)
         except Exception as err:
             print('Error while polling ' + str(err))
             return None
 
-    def pollForBatch(self, taskType, count, timeout, workerid, domain=None):
+    def pollForBatch(self, taskType, count, timeout, workerid, domain=None, headers=None):
         url = self.makeUrl('poll/batch/{}', taskType)
         params = {}
         params['workerid'] = workerid
@@ -208,17 +212,19 @@ class TaskClient(BaseClient):
             params['domain'] = domain
 
         try:
-            return self.get(url, params)
+            return self.get(url, params, headers)
         except Exception as err:
             print('Error while polling ' + str(err))
             return None
 
-    def ackTask(self, taskId, workerid):
+    def ackTask(self, taskId, workerid, headers=None):
         url = self.makeUrl('{}/ack', taskId)
         params = {}
         params['workerid'] = workerid
-        headers = {'Accept': 'application/json'}
-        value = self.post(url, params, None, headers)
+        theHeader = self.headers
+        if headers is not None:
+            theHeader = self.mergeTwoDicts({'Accept': 'application/json'}, headers)
+        value = self.post(url, params, None, theHeader)
         return value in ['true', True]
 
     def getTasksInQueue(self, taskName):

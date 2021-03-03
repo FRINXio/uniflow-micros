@@ -18,7 +18,7 @@ def main():
         os.remove(healtchchek_file_path)
 
     print('Starting FRINX workers')
-    cc = worker_wrapper.ExceptionHandlingConductorWrapper(conductor_url_base, 1, 1)
+    cc = worker_wrapper.ExceptionHandlingConductorWrapper(conductor_url_base, 1, 1, headers=conductor_headers)
     register_workers(cc)
     import_workflows(workflows_folder_path)
 

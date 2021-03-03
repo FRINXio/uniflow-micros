@@ -53,12 +53,12 @@ class ExceptionHandlingConductorWrapper(ConductorWorker):
         while True:
             time.sleep(float(self.polling_interval))
             print(self.timestamp() + ' Polling for task: ' + taskType + ' with wait ' + str(poll_wait))
-            polled = self.taskClient.pollForBatch(taskType, 1, poll_wait, self.worker_id, domain, headers=conductor_headers)
+            polled = self.taskClient.pollForBatch(taskType, 1, poll_wait, self.worker_id, domain)
             if polled is not None:
                 print(self.timestamp() + ' Polled batch for ' + taskType + ':' + str(len(polled)))
                 for task in polled:
                     print(self.timestamp() + ' Polled ' + taskType + ': ' + task['taskId'])
-                    if self.taskClient.ackTask(task['taskId'], self.worker_id, headers=conductor_headers):
+                    if self.taskClient.ackTask(task['taskId'], self.worker_id):
                         self.execute(task, exec_function)
 
     def timestamp(self):

@@ -2,6 +2,14 @@ FROM python:3.6.10-buster
 
 RUN apt-get update
 
+WORKDIR /home/app
+
+RUN groupadd -r frinx && \
+    useradd --no-log-init -r -g frinx frinx && \ 
+    chown -R frinx:frinx /home/app && \
+    mkdir -p /home/frinx && \
+    chown -R frinx:frinx /home/frinx
+
 # Copy conductor integration files
 COPY ./conductor-client /home/app/conductor-client
 
@@ -23,4 +31,7 @@ WORKDIR /home/app/workers
 RUN python3 -m unittest uniconfig_worker_test.py
 RUN python3 -m unittest netconf_worker_test.py
 RUN python3 -m unittest cli_worker_test.py
+
+USER frinx
+
 ENTRYPOINT [ "python3", "main.py" ]

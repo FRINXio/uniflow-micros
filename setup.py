@@ -13,7 +13,19 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 # 
-__version__ = '1.0.0'
-VERSION = tuple(map(int, __version__.split('.')))
+from setuptools import setup
 
-__all__ = ['conductor','ConductorWorker']
+setup(
+  name = 'frinx_conductor_workers',
+  packages = ['workers'],
+  version = '1.0.0',
+  description = 'Conductor python client workers',
+  author = 'Frinx',
+  author_email = 'info@frinx.io',
+  url = 'https://github.com/FRINXio/uniflow-micros',
+  keywords = ['conductor'],
+  license = 'Apache 2.0',
+  # install_requires = [
+  #   'requests',
+  # ]
+)
